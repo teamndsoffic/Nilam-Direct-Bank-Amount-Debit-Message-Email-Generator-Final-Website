@@ -5,111 +5,144 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Debit Notification Email Generator</title>
-    <link rel="icon" href="NDS_Logo_Transparent.png" type="image/png"> <!-- Adding the favicon for SEO -->
-    <link rel="apple-touch-icon" sizes="180x180" href="NDS_Logo_Transparent.png"> <!-- Adding the Apple touch icon for SEO -->
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
+        /* Background Styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
+
+        /* Centered Form Container */
         .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
+            max-width: 450px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             text-align: center;
-            margin-bottom: 20px;
         }
-        form {
-            margin-bottom: 20px;
-        }
-        label {
+
+        /* Heading */
+        h1 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
             font-weight: bold;
         }
-        input[type="text"],
-        input[type="number"],
-        button {
+
+        /* Labels */
+        label {
+            display: block;
+            font-weight: bold;
+            text-align: left;
+            margin-top: 12px;
+        }
+
+        /* Input Fields */
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-top: 5px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            border-radius: 6px;
+            font-size: 16px;
         }
+
+        /* Generate Email Button */
         button {
-            background-color: #007bff;
-            color: #fff;
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
             cursor: pointer;
+            transition: background 0.3s ease-in-out;
         }
+
         button:hover {
-            background-color: #0056b3;
+            background: #0056b3;
         }
+
+        /* Email Preview Section */
         #emailResult {
             display: none;
             padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            margin-top: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            text-align: left;
         }
-        #emailContent {
-            white-space: pre-line;
+
+        /* Copy Buttons */
+        .copy-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
         }
-        video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
+
+        .copy-buttons button {
+            flex: 1;
         }
-        footer {
-            background-color: #b121d9;
-            color: #fff;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
+
+        /* Warning Message */
         .warning {
             color: red;
+            font-size: 14px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-
-    <video autoplay loop muted playsinline>
-        <source src="background.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
     <div class="container">
         <h1>Debit Notification Email Generator NDB</h1>
         <form id="debitForm">
-            <label for="customerName">Customer Name:</label>
-            <input type="text" id="customerName" name="customerName" required><br><br>
-            <label for="amount">Amount:</label>
-            <input type="number" id="amount" name="amount" required><br><br>
-            <label for="leftAmount">Left Amount:</label>
-            <input type="number" id="leftAmount" name="leftAmount" required><br><br>
-            <button type="submit">Generate Email</button>
+            <div class="mb-3">
+                <label for="customerName">Customer Name:</label>
+                <input type="text" id="customerName" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="leftAmount">Left Amount:</label>
+                <input type="number" id="leftAmount" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Generate Email</button>
             <p id="warning" class="warning" style="display:none;">Please fill all details</p>
         </form>
 
         <div id="emailResult">
             <h2>Email Preview:</h2>
+            <p><strong>Subject:</strong> <span id="emailSubject"></span></p>
             <p id="emailContent"></p>
-            <button id="copyButton" onclick="copyToClipboard()">Copy to Clipboard</button>
+            <div class="copy-buttons">
+                <button id="copySubjectButton" class="btn btn-outline-secondary" onclick="copySubject()">Copy Subject</button>
+                <button id="copyButton" class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy Body</button>
+            </div>
         </div>
     </div>
 
-    <footer>Made With ❤️ By NDS Payments Corp.</footer>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         document.getElementById("debitForm").addEventListener("submit", function(event) {
@@ -126,31 +159,26 @@
                 document.getElementById("warning").style.display = "none";
             }
 
-            var emailContent = `Deduction Notification: ₹${amount} from ${customerName} NDB Account\n\n`;
-            emailContent += `Dear ${customerName},\n\n`;
-            emailContent += `We would like to inform you that a deduction of ₹${amount} has been made from your NDB Account on ${currentDate}. Your remaining balance is ₹${leftAmount}. If you have any queries or require further clarification regarding this deduction, please feel free to contact our customer support team.\n\n`;
-            emailContent += `Thank you for banking with us.\n\n`;
-            emailContent += `Sincerely,\n\n`;
-            emailContent += `NILAM DIRECT BANK TEAM`;
+            var subject = `₹${amount} from ${customerName} NDB Account`;
+            var emailBody = `Dear ${customerName},\n\nWe would like to inform you that a deduction of ₹${amount} has been made from your NDB Account on ${currentDate}. Your remaining balance is ₹${leftAmount}.\n\nIf you have any queries, please contact our support team.\n\nThank you for banking with us.\n\nSincerely,\nNILAM DIRECT BANK TEAM`;
 
-            document.getElementById("emailContent").innerText = emailContent;
+            document.getElementById("emailSubject").innerText = subject;
+            document.getElementById("emailContent").innerText = emailBody;
             document.getElementById("emailResult").style.display = "block";
         });
 
-        function copyToClipboard() {
-            var emailContent = document.getElementById("emailContent").innerText;
+        function copySubject() {
+            var subjectText = document.getElementById("emailSubject").innerText;
+            navigator.clipboard.writeText(subjectText)
+                .then(() => alert("Subject copied!"))
+                .catch(err => console.error('Failed to copy subject:', err));
+        }
 
-            navigator.clipboard.writeText(emailContent)
-                .then(function() {
-                    var copyButton = document.getElementById("copyButton");
-                    copyButton.innerText = "Copied!";
-                    setTimeout(function () {
-                        copyButton.innerText = "Copy to Clipboard";
-                    }, 2000); // Reset button text after 2 seconds
-                })
-                .catch(function(error) {
-                    console.error('Failed to copy: ', error);
-                });
+        function copyToClipboard() {
+            var emailBody = document.getElementById("emailContent").innerText;
+            navigator.clipboard.writeText(emailBody)
+                .then(() => alert("Email body copied!"))
+                .catch(err => console.error('Failed to copy:', err));
         }
     </script>
 </body>
